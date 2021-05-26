@@ -19,7 +19,7 @@ classdef Mobile
       end
       
       function obj = gen_trayectory(obj,dt)
-          obj.t_vect = min(obj.moves_inter,[],'all'):dt:max(obj.moves_inter,[],'all');
+          obj.t_vect = min(obj.moves_inter,[],'all'):dt:max(obj.moves_inter,[],'all')-dt;
           obj.history = zeros(4,size(obj.t_vect,2));
           
           % generate by moves_law

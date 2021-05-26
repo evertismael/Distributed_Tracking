@@ -47,30 +47,5 @@ target = target.gen_trayectory(dt);
 % -------------------------------------------------------------------------
 % 3.- It displays the trayectory - Target only
 % -------------------------------------------------------------------------
-figure;
-subplot(2,3,1);
-plot(target.t_vect,target.history(1,:))
-title('x')
-
-subplot(2,3,4);
-plot(target.t_vect,target.history(2,:))
-title('vx')
-
-subplot(2,3,2);
-plot(target.t_vect,target.history(3,:))
-title('y')
-
-subplot(2,3,5);
-plot(target.t_vect,target.history(4,:))
-title('vy')
-
-subplot(2,3,6);
-title('xy-plane')
-xlim([0,12]);
-ylim([0,12]);
-
-hold on;
-for t_idx = 1:1:size(target.t_vect,2)
-    plot(target.history(1,t_idx),target.history(3,t_idx),'.b');
-    pause(0.01)
-end
+fig = figure;
+show_target(fig,target);

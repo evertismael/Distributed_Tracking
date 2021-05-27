@@ -9,7 +9,7 @@ target = define_target();
 % -------------------------------------------------------------------------
 % 2.- Generate samples of the trayectory:
 % -------------------------------------------------------------------------
-dt = (1e-2)*1;
+dt = (1e-2);
 target = target.gen_trayectory(dt);
 
 % -------------------------------------------------------------------------
@@ -20,22 +20,28 @@ N_t = size(target.t_vect,2);
 
 % sigma is for toa/roa
 % var_n for baseband signal.
-SNR_db = -5;
+SNR_db = -9;
 
 
 % define BSs and FC
 bss = BSs(Inf,SNR_db);
+bss = bss.gen_pilot_tx();
 fc = FC();
 
 deltas_hist = zeros(scene.N_bs,N_t);
 xy_toa_hist = zeros(2,N_t);
 for t_idx = 1:N_t
     target.history(:,t_idx);
-    % SNR_center / same
-    [~, deltas_mean, deltas_var] = bss.compute_bpass_toa(target.history(:,t_idx), 'same');
     
-    % compute xy based on toa's at each iteration
+    % noise_type: SNR_center / same
+    bss = bss.channel_propagation(target.history(:,t_idx), 'SNR_center');
+    
+    [~, deltas_mean, deltas_var] = bss.compute_bsbnd_toa();
+    
+    % compute xy based on toa's at each time-iteration
     [xy_toa, varxy_toa] = fc.multilateration_toa(deltas_mean, deltas_var);
+    
+       
     
     % ______________________________________________
     % save for history:
@@ -50,9 +56,6 @@ end
 fig = figure('Position',[1921 314 1920 988]);
 show_target_toa_meas(fig,target,xy_toa_hist);
 ''
-
-
-
 
 
 % -------------------------------------------------------------------------

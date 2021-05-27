@@ -9,6 +9,7 @@ classdef FC
           obj.bx = scene.bx;
       end
       
+      % MULTILATERATION:
       function [xy_toa, varxy_toa] = multilateration_toa(obj, deltas_mean, deltas_var)
           scene = Params.get_scene();
           gs = Params.get_grid_search();
@@ -42,14 +43,14 @@ classdef FC
           var_xy = (1/pdf_norm)*trapz((gs.y - mean_y).*tmp_y,2)*gs.dy;
           varxy_toa = [var_x var_xy; var_xy var_y];  
           
+          % check for small variances:
+          varxy_toa(varxy_toa < 1e-10) = 1e-10;
+          
 %           figure;
 %           imagesc(lk);
 %           title('toa')
 %           ''
       end
-      
-      
-      
       function [xy_tdoa, varxy_tdoa] = multilateration_tdoa(obj, deltas_mean, deltas_var)
           scene = Params.get_scene();
           gs = Params.get_grid_search();
@@ -98,6 +99,18 @@ classdef FC
 %           ''
       end
       
-      
+      % PRIOR: IPE:
+      function [prior_mean, prior_var] = prior_toa(obj, xy_mean, xy_var)
+          % prior mean:
+          prior_mean = sqrt(sum((xy_mean - obj.bx).^2,1));
+          
+          % prior variance:
+          xy_diff = obj.bx - xy_mean;
+          tmp = [sum(xy_diff.*xy_var(:,1),1); sum(xy_diff.*xy_var(:,2),1)];
+          prior_var = (1./(prior_mean.^2)).*sum(tmp.*xy_diff,1);
+          
+          % check small variance:
+          prior_var(prior_var<1e-10) = 1e-10;
+      end      
    end
 end

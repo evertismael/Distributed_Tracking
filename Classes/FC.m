@@ -44,7 +44,7 @@ classdef FC
           varxy_toa = [var_x var_xy; var_xy var_y];  
           
           % check for small variances:
-          varxy_toa(varxy_toa < 1e-10) = 1e-10;
+          varxy_toa(varxy_toa < gs.dx^2) = gs.dx^2;
           
 %           figure;
 %           imagesc(lk);

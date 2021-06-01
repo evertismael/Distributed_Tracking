@@ -2,11 +2,35 @@ classdef Params
    methods (Static)
        function scene = get_scene()
            persistent bx;
+           persistent network_type;
+           
+           network_type = 'ring'; % fully/ring
+           
            scene = {};
            bx = [0,0; 50,0; 50,50; 0,50].';
            scene.bx = bx;
            scene.N_bs = size(bx,2);
+           
+           % Adj matrix:
+           if strcmp(network_type,'fully')
+               % Fully connected netxork:
+               scene.bs_from = [1 1 1, 2 2 2, 3 3 3, 4 4 4];
+               scene.bs_to  =  [2 3 4, 1 3 4, 1 2 4, 1 2 3];
+               scene.A = zeros(scene.N_bs,scene.N_bs);
+               idx_from_to = sub2ind(size(scene.A), scene.bs_from,scene.bs_to);
+               scene.A(idx_from_to) = 1;
+           elseif strcmp(network_type,'ring')
+               % Ring-Gossip network:
+               scene.bs_from = [1 1, 2 2, 3 3, 4 4];
+               scene.bs_to  =  [2 4, 1 3, 2 4, 1 3];
+               scene.A = zeros(scene.N_bs,scene.N_bs);
+               idx_from_to = sub2ind(size(scene.A), scene.bs_from,scene.bs_to);
+               scene.A(idx_from_to) = 1;
+           else
+               error('network_type not recognized');
+           end
        end
+       
        
        function gs = get_grid_search()
            gs = {};

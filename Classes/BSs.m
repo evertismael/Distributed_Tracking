@@ -113,7 +113,6 @@ classdef BSs
           deltas_var = squeeze(deltas_var);
           toas = deltas_mean./obj.c;
       end
-      
       function [toas, deltas_mean, deltas_var] = refine_toa(obj, prior_mean, prior_var)
           
           gs = Params.get_grid_search();
@@ -132,6 +131,8 @@ classdef BSs
           
           deltas_mean = (1/llk_norm).*trapz(gs.r.*lk,1)*gs.dr;
           deltas_var = (1/llk_norm).*trapz(((gs.r-deltas_mean).^2).*lk,1)*gs.dr;
+          % check min var:
+          deltas_var(deltas_var<gs.dr^2) = gs.dr^2;
           
           % output:
           deltas_mean = squeeze(deltas_mean);

@@ -69,8 +69,8 @@ classdef Params
        function gs = get_grid_search()
            scene = Params.get_scene();
            gs = {};
-           gs.x_min = 0; gs.x_max = max(scene.bx(1,:),[],'all'); gs.Nx = 50;
-           gs.y_min = 0; gs.y_max = max(scene.bx(2,:),[],'all'); gs.Ny = 50;
+           gs.x_min = 0; gs.x_max = max(scene.bx(1,:),[],'all'); gs.Nx = 90;
+           gs.y_min = 0; gs.y_max = max(scene.bx(2,:),[],'all'); gs.Ny = 90;
            gs.r_min = 0; gs.r_max = 150; gs.Nr = 200;
            
            gs.dx = (gs.x_max - gs.x_min)/gs.Nx;

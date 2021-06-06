@@ -34,12 +34,34 @@ classdef Mobile
                  x_init = [1,0,0,0;0,0,1,0]*obj.history(:,t_idx_init-1);
                  v_init = [0,1,0,0;0,0,0,1]*obj.history(:,t_idx_init-1);
              end
+             syms tf
+             x = obj.moves_law(law_idx).law_x(x_init,v_init,t0,tf);
+             y = obj.moves_law(law_idx).law_y(x_init,v_init,t0,tf);
+             vx = obj.moves_law(law_idx).law_vx(x_init,v_init,t0,tf);
+             vy = obj.moves_law(law_idx).law_vy(x_init,v_init,t0,tf);
              
-             x = obj.moves_law(law_idx).law_x(x_init,v_init,t0,obj.t_vect(t_idxs));
-             y = obj.moves_law(law_idx).law_y(x_init,v_init,t0,obj.t_vect(t_idxs));
-             vx = obj.moves_law(law_idx).law_vx(x_init,v_init,t0,obj.t_vect(t_idxs));
-             vy = obj.moves_law(law_idx).law_vy(x_init,v_init,t0,obj.t_vect(t_idxs));
-             obj.history(:,t_idxs)=[x;vx;y;vy];             
+             tf = obj.t_vect(t_idxs);
+             x_val = double(subs(x));
+             y_val = double(subs(y));
+             vx_val = double(subs(vx));
+             vy_val = double(subs(vy));
+             
+             % check dimensions:
+             if size(x_val,2)==1
+                 x_val = x_val*ones(1,size(tf,2));
+             end
+             if size(y_val,2)==1
+                 y_val = y_val*ones(1,size(tf,2));
+             end
+             if size(vx_val,2)==1
+                 vx_val = vx_val*ones(1,size(tf,2));
+             end
+             if size(vy_val,2)==1
+                 vy_val = vy_val*ones(1,size(tf,2));
+             end
+             
+             obj.history(:,t_idxs)=[x_val;vx_val;y_val;vy_val];
+             
           end 
       end
    end

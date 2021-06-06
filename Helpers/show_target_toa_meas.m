@@ -1,4 +1,4 @@
-function show_target_toa_meas(fig, target, xy_toa_hist)
+function show_target_toa_meas(fig, target, xy_toa_hist, xy_axis)
 figure(fig)
     subplot(2,3,1); hold on;
     plot(target.t_vect,target.history(1,:),'DisplayName','true')
@@ -25,5 +25,5 @@ figure(fig)
     plot(target.history(1,1),target.history(3,1),'or'); % initial point
     
     title('xy-plane')
-    xlim([-5,55]); ylim([-5,55]);
+    axis(xy_axis)
 end

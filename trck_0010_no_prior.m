@@ -4,7 +4,7 @@ addpath('Helpers')
 % -------------------------------------------------------------------------
 % 1.- Define target trajetories
 % -------------------------------------------------------------------------
-target = define_target();
+target = oval_trayectory();
 
 % -------------------------------------------------------------------------
 % 2.- Generate samples of the trayectory:
@@ -48,8 +48,8 @@ for t_idx = 1:N_t
     %target.history(:,t_idx)
     noise_type = 'SNR_center'; %  SNR_center / same
     bss = bss.channel_propagation(target.history(:,t_idx), noise_type);
-    [~, deltas_mean, deltas_var] = bss.compute_bsbnd_toa();
-    [xy_toa, varxy_toa] = fc.multilateration_toa(deltas_mean, deltas_var);
+    [~, deltas_mean, deltas_var,act_bss] = bss.compute_bsbnd_toa();
+    [xy_toa, varxy_toa] = fc.multilateration_toa(deltas_mean, deltas_var,act_bss);
     
     if t_idx == 1
         % initialization:
@@ -77,78 +77,9 @@ end
 % -------------------------------------------------------------------------
 
 fig1 = figure('Position',[1925 847 560 420]);
-show_target_toa_meas(fig1,target,xy_toa_hist);
+show_target_toa_meas(fig1,target,xy_toa_hist,[0 50 0 50]);
 fig2 = figure('Position',[2577 858 560 420]);
 show_target_and_tracker(fig2, target, xy_ukf_hist,eig_P_est_hist,eig_P_pred_hist);
-fig3 = figure('Position',[1946 340 560 420]);
+fig3 = figure('Position',[1946 50 560 420]);
 show_measurements(fig3, target.t_vect, deltas_mean_hist, deltas_var_hist);
 ''
-
-
-% -------------------------------------------------------------------------
-% Extra local Functions
-% -------------------------------------------------------------------------
-
-function target = define_target_()
-x0 = [20,2,10,0].';
-target = Mobile(x0);
-
-% constant velocity model: but we could have a non-linear system here
-w0 = 0.15;
-t1 = 0; t2 = 2*pi/w0;
-law_vx = @(x_init,v_init,t_init,t) sqrt(sum(v_init.^2))*cos(w0*(t-t_init));
-law_vy = @(x_init,v_init,t_init,t) sqrt(sum(v_init.^2))*sin(w0*(t-t_init));
-law_x = @(x_init,v_init,t_init,t) x_init(1) + (sqrt(sum(v_init.^2))/w0)*sin(w0*(t-t_init));
-law_y = @(x_init,v_init,t_init,t) x_init(2) - (sqrt(sum(v_init.^2))/w0)*(cos(w0*(t-t_init)) - 1);
-law = Law(law_x,law_y,law_vx, law_vy);
-
-target = target.add_trayectory(t1,t2,law);
-end
-
-function target = define_target()
-x0 = [20,2,10,0].';
-target = Mobile(x0);
-
-% add non overlapping (in time) trayectories.
-t1 = 0; t2 = 5;
-% constant velocity model: but we could have a non-linear system here
-law_x = @(x_init,v_init,t_init,t) x_init(1) + v_init(1)*(t-t_init);
-law_y = @(x_init,v_init,t_init,t) x_init(2) + v_init(2)*(t-t_init);
-law_vx = @(x_init,v_init,t_init,t) v_init(1) + 0*t;
-law_vy = @(x_init,v_init,t_init,t) v_init(2) + 0*t;
-law = Law(law_x,law_y,law_vx, law_vy);
-
-target = target.add_trayectory(t1,t2,law);
-
-
-% constant velocity model: but we could have a non-linear system here
-w0 = 0.15;
-t1 = 5; t2 = 5 + pi/w0;
-law_vx = @(x_init,v_init,t_init,t) sqrt(sum(v_init.^2))*cos(w0*(t-t_init));
-law_vy = @(x_init,v_init,t_init,t) sqrt(sum(v_init.^2))*sin(w0*(t-t_init));
-law_x = @(x_init,v_init,t_init,t) x_init(1) + (sqrt(sum(v_init.^2))/w0)*sin(w0*(t-t_init));
-law_y = @(x_init,v_init,t_init,t) x_init(2) - (sqrt(sum(v_init.^2))/w0)*(cos(w0*(t-t_init)) - 1);
-law = Law(law_x,law_y,law_vx, law_vy);
-
-target = target.add_trayectory(t1,t2,law);
-
-t1 = t2; t2 = t2 + 5;
-% constant velocity model: but we could have a non-linear system here
-law_x = @(x_init,v_init,t_init,t) x_init(1) + v_init(1)*(t-t_init);
-law_y = @(x_init,v_init,t_init,t) x_init(2) + v_init(2)*(t-t_init);
-law_vx = @(x_init,v_init,t_init,t) v_init(1) + 0*t;
-law_vy = @(x_init,v_init,t_init,t) v_init(2) + 0*t;
-law = Law(law_x,law_y,law_vx, law_vy);
-
-target = target.add_trayectory(t1,t2,law);
-
-% constant velocity model: but we could have a non-linear system here
-w0 = 0.15;
-t1 = t2; t2 = t2 + pi/w0;
-law_vx = @(x_init,v_init,t_init,t) sqrt(sum(v_init.^2))*cos(w0*(t-t_init) + pi);
-law_vy = @(x_init,v_init,t_init,t) sqrt(sum(v_init.^2))*sin(w0*(t-t_init) + pi);
-law_x = @(x_init,v_init,t_init,t) x_init(1) + (sqrt(sum(v_init.^2))/w0)*sin(w0*(t-t_init) + pi);
-law_y = @(x_init,v_init,t_init,t) x_init(2) + (sqrt(sum(v_init.^2))/w0)*(cos(w0*(t-t_init))-1);
-law = Law(law_x,law_y,law_vx, law_vy);
-target = target.add_trayectory(t1,t2,law);
-end

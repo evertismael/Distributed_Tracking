@@ -1,34 +1,18 @@
-function show_target(fig, target, xy_dim)
-figure(fig)
-    subplot(2,3,1);
-    plot(target.t_vect,target.history(1,:))
-    title('x')
-
-    subplot(2,3,4);
-    plot(target.t_vect,target.history(2,:))
-    title('vx')
-
-    subplot(2,3,2);
-    plot(target.t_vect,target.history(3,:))
-    title('y')
-
-    subplot(2,3,5);
-    plot(target.t_vect,target.history(4,:))
-    title('vy')
-
-    subplot(2,3,6);
+function animate_target(fig, target, xy_dim)
+    figure(fig)
+    title('xy-plane')
+    axis(xy_dim); grid on;
     hold on;
-    plot(target.history(1,:),target.history(3,:),'.b');
-    plot(target.history(1,1),target.history(3,1),'or');
-    % draw the road & bss:
     scene = Params.get_scene();
     scatter(scene.bx(1,:),scene.bx(2,:),'^');
     circle(45,45,5); % roundabout:
     road_borders();
-    
-    title('xy-plane')
-    axis(xy_dim); grid on;
+    for idx = 1:size(target.history(3,:),2)-1
+        plot(target.history(1,idx),target.history(3,idx),'.b');
+        pause(0.1);
+    end  
 end
+
 
 function h = circle(x,y,r)
 th = 0:pi/50:2*pi;

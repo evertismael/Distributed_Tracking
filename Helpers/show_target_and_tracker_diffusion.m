@@ -1,4 +1,4 @@
-function show_target_and_tracker_diffusion(fig, target, track)
+function show_target_and_tracker_diffusion(fig, target, track, axis_vect)
 figure(fig)
     subplot(2,3,1); hold on;
     plot(target.t_vect,target.history(1,:),'DisplayName','true')
@@ -25,5 +25,5 @@ figure(fig)
     plot(squeeze(track(1,:,:)),squeeze(track(3,:,:)),'DisplayName','ukf')
     
     title('xy-plane');
-    xlim([-5,55]); ylim([-5,55]);
+    axis(axis_vect);
 end

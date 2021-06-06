@@ -10,18 +10,17 @@ classdef FC
       end
       
       % MULTILATERATION:
-      function [xy_toa, varxy_toa] = multilateration_toa(obj, deltas_mean, deltas_var)
-          scene = Params.get_scene();
+      function [xy_toa, varxy_toa] = multilateration_toa(obj, deltas_mean, deltas_var, act_bss)
           gs = Params.get_grid_search();
-          tmp_x = gs.x-reshape(obj.bx(1,:),1,1,scene.N_bs);
-          tmp_y = gs.y-reshape(obj.bx(2,:),1,1,scene.N_bs);
+          tmp_x = gs.x-reshape(obj.bx(1,act_bss),1,1,size(act_bss,2));
+          tmp_y = gs.y-reshape(obj.bx(2,act_bss),1,1,size(act_bss,2));
           
           gsr = sqrt(tmp_x.^2 + tmp_y.^2);
           
           % assume a time synchronized system => t0 = 0;
           % compute position based on gird-search
-          deltas_mean = reshape(deltas_mean,1,1,scene.N_bs);
-          deltas_var = reshape(deltas_var,1,1,scene.N_bs);
+          deltas_mean = reshape(deltas_mean,1,1,size(act_bss,2));
+          deltas_var = reshape(deltas_var,1,1,size(act_bss,2));
           
           llk = (-0.5./deltas_var).*(gsr-deltas_mean).^2;
           sum_llk = sum(llk,3);
@@ -49,7 +48,7 @@ classdef FC
 %           figure;
 %           imagesc(lk);
 %           title('toa')
-%           ''
+           '';
       end
       function [xy_tdoa, varxy_tdoa] = multilateration_tdoa(obj, deltas_mean, deltas_var)
           scene = Params.get_scene();
@@ -100,17 +99,18 @@ classdef FC
       end
       
       % PRIOR: IPE:
-      function [prior_mean, prior_var] = prior_toa(obj, xy_mean, xy_var)
+      function [prior_mean, prior_var] = prior_toa(obj, xy_mean, xy_var, act_bss)
           % prior mean:
-          prior_mean = sqrt(sum((xy_mean - obj.bx).^2,1));
+          prior_mean = sqrt(sum((xy_mean - obj.bx(:,act_bss)).^2,1));
           
           % prior variance:
-          xy_diff = obj.bx - xy_mean;
+          xy_diff = obj.bx(:,act_bss) - xy_mean;
           tmp = [sum(xy_diff.*xy_var(:,1),1); sum(xy_diff.*xy_var(:,2),1)];
           prior_var = (1./(prior_mean.^2)).*sum(tmp.*xy_diff,1);
           
           % check small variance:
           prior_var(prior_var<1e-10) = 1e-10;
+          '';
       end      
    end
 end

@@ -1,6 +1,7 @@
 clear; clc; close all;
 addpath('Classes')  
 addpath('Helpers')  
+addpath('Targets')  
 
 % -------------------------------------------------------------------------
 % 1.- Define target trajetories
@@ -18,11 +19,11 @@ target = target.gen_trayectory(dt);
 % -------------------------------------------------------------------------
 scene = Params.get_scene();
 N_t = size(target.t_vect,2);
-N_iter = 1;
+N_iter = 3;
 
 % sigma is for toa/roa
 % var_n for baseband signal.
-SNR_db = -13;
+SNR_db = -5;
 
 
 % define BSs, FC and UKF_tracker.
@@ -49,7 +50,6 @@ eig_P_pred_hist = zeros(4,N_t,N_bs);
 % first sample initiates the tracker:
 for t_idx = 1:N_t
     % read sensor
-    noise_type = 'SNR_center'; %  SNR_center / same
     bss = bss.channel_propagation(target.history(:,t_idx), noise_type);
     [~, deltas_mean, deltas_var] = bss.compute_bsbnd_toa();
     [xy_toa, varxy_toa] = fc.multilateration_toa(deltas_mean, deltas_var);

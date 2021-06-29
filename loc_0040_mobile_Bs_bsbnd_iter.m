@@ -1,6 +1,7 @@
 clear; clc; close all;
 addpath('Classes')  
-addpath('Helpers')  
+addpath('Helpers') 
+addpath('Targets') 
 % -------------------------------------------------------------------------
 % 1.- Define target trajetories
 % -------------------------------------------------------------------------

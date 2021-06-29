@@ -58,10 +58,10 @@ end
 % 4.- It displays the trayectory - Target only
 % -------------------------------------------------------------------------
 fig1 = figure('Position',[1925 847 560 420]);
-show_target_toa_meas(fig1,target,xy_toa_hist,[0 90 0 90]);
+show_target_toa_meas(fig1,target,xy_toa_hist,[-2 92 -2 92]);
 
 fig2 = figure('Position',[2494 551 560 420]);
-show_bss_xy_dist_toa(fig2,target,xyd_toa_hist,[0 90 0 90]);
+show_bss_xy_dist_toa(fig2,target,xyd_toa_hist,[-2 92 -2 92]);
 
 fig3 = figure('Position',[1932 40 560 420]);
 show_measurements(fig3,target.t_vect, z_mean_hist, z_var_hist);
